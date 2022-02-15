@@ -5,6 +5,9 @@ from num2words import num2words
 from random import choice, choices
 from datetime import datetime
 import twitter
+import os
+from time import sleep
+import subprocess
 
 def log(message):
     with open("log.txt", "w") as f:
@@ -12,7 +15,8 @@ def log(message):
         f.write("   " + str(datetime.now()) + "\n")
         f.write("--------------------------------")
 
-with open("tokens.txt", "r") as f:
+path = os.path.dirname(__file__) + "/tokens.txt" if len(os.path.dirname(__file__)) > 1 else "./tokens.txt"
+with open(path, "r") as f:
     lines = f.readlines()
     SECRET = lines[0].strip()
     API_KEY= lines[1].strip()
@@ -30,13 +34,13 @@ def tweeter(tweet:str):
                       access_token_key=ACCESS)
     try:
         api.PostUpdate(tweet)
+        pass
     except UnicodeDecodeError:
         log("Unicode error: " + tweet)
     except twitter.error.TwitterError:
-        log("Twitter error.")
-        
-                      
-    
+        log("Twitter errror: ")
+
+
 food = ['rotisserie chicken', 'pringle', 'velveeta block', 'pot pie', 'mincemeat', \
     'green bean', 'onion', 'tater tot', 'sausage', 'creme brulee', 'meatball', 'fried rice', \
         'calzone', 'escargot', 'hamburger helper', 'chicken nugget', 'chicken salad', \
@@ -90,12 +94,21 @@ def main():
     txt = txt + '                  Served in a' + str(choice(restaurant)) + '.\n'
     txt = txt + '                        ' + str(choice(descriptor)) + str(choice(punctuation))
     tweeter(txt)
-    exit(0)
+
     #print("\nPossible combinations: " + num2words(G.num_combs))
     #could set this to a bio? or something
 
-    
-t = Thread(target=main)    
-t.start()   
+if __name__ == '__main__':
+    with open('stop.sh', 'w') as f:
+        PID = os.getpid()
+        f.write('sudo kill ' + str(PID))
+        path = os.path.dirname(__file__) + "/stop.sh" if len(os.path.dirname(__file__)) > 1 else "./stop.sh"
+        os.system("sudo chmod +x " + path)
+    while True:
+        main()
+        sleep(3000)
+
+
+
 #num_combs = ((len(food) * 2) * len(food) * 2 * len(application) * len(application_method) * len(restaurant) * len(punctuation) * len(ethnicity) * len(descriptor))
 #G.set_combs(num_combs)

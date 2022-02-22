@@ -7,10 +7,9 @@ from datetime import datetime
 import twitter
 import os
 from time import sleep
-import subprocess
 
 def log(message):
-    with open("log.txt", "w") as f:
+    with open("log.txt", "a+") as f:
         f.write(message + "\n")
         f.write("   " + str(datetime.now()) + "\n")
         f.write("--------------------------------")
@@ -23,18 +22,19 @@ with open(path, "r") as f:
     BEARER = lines[2].strip()
     ACCESS = lines[3].strip()
     ACCESS_SECRET = lines[4].strip()
-    
+
 def pluralize(food:str, plur:bool):
     return food + "s" if plur else "an " + food if food[0] in ['a', 'e', 'i', 'o', 'u'] else "a " + food
 
-def tweeter(tweet:str):
+def tweeter(tweet:str, num_combs):
     api = twitter.Api(consumer_key=API_KEY,
                       consumer_secret=SECRET,
                       access_token_secret=ACCESS_SECRET,
                       access_token_key=ACCESS)
     try:
-        api.PostUpdate(tweet)
-        pass
+        #api.PostUpdate(tweet)
+        #api.UpdateProfile(description="Random gourmet food generator.\nCurrently at " + str(num_combs) + " combinations.\nSource + more info at github.com/HansTheIV/DishOfDust")
+        print("success")
     except UnicodeDecodeError:
         log("Unicode error: " + tweet)
     except twitter.error.TwitterError:
@@ -51,7 +51,7 @@ food = ['rotisserie chicken', 'pringle', 'velveeta block', 'pot pie', 'mincemeat
                             'pizza', 'linguine noodle', 'macaroni', 'lasagna', 'macaron', \
                                 'herb', 'lettuce', 'cherry', 'apple', 'pear', 'peach', 'banana', 
                                     'orange', 'grape', 'strawberry', 'blueberry', 'raspberry', \
-                                        'watermelon', 'crab', 'pepsi max']
+                                        'watermelon', 'crab', 'pepsi', 'coke', 'bread', 'bagel']
  
 ethnicity = [' French', ' German', 'n American', ' Japanese', ' Ukrainian', 'n English', ' Czech', ' Chinese', \
     ' Lebanese',' Yugoslavian', ' Mongolian', ' Somali', 'n Egyptian'] # et cetera
@@ -73,17 +73,16 @@ duration = ['seconds', 'microfortnights', 'minutes', 'moments', 'kermits', 'hour
 #https://en.wikipedia.org/wiki/List_of_unusual_units_of_measurement#Microfortnight
 #https://en.wikipedia.org/wiki/List_of_unusual_units_of_measurement#KerMetric_time
 
-time_weights = (40, 20, 70, 60, 60, 30, 6, 5, 2, 1)
+time_weights = (45, 20, 80, 40, 20, 40, 6, 5, 2, 1)
 
 descriptor = ['Overdone', 'Crispy', 'Diseased', 'Fried', 'Frozen', 'Gourmet', 'Hot', 'Hot and Spicy',\
     'Raw', 'Delicious', 'Gross', 'Delectable', 'Magically Delicious', 'Delightful', 'Revolting', \
         'Mouth-watering', 'Venomous', 'Fitting', 'Fantastic', 'Fantabulous', 'Meh', \
             'Frankly, walking', 'Like a prize from a Cracker Jack box', 'Oily', 'Dry', 'Salty', 'Sweet']
 
-punctuation = ['.', '!', '?', '~', '... NOT.', ', ~UwU~']
+punctuation = ['.', '!', '?', '~', '... NOT.', ', ~UwU~', ', so to speak.']
 
-def main():
-    
+def main(num_combs):
     plural = [True, False]
     food1 = pluralize(choice(food), choice(plural))        
     food2 = pluralize(choice(food), choice(plural))
@@ -93,22 +92,11 @@ def main():
     txt = txt + '            ' + str(food2) + ' for ' + str(num2words(choice(time))) + ' ' + str(choices(duration, weights=time_weights, k=1)[0]) + ".\n"
     txt = txt + '                  Served in a' + str(choice(restaurant)) + '.\n'
     txt = txt + '                        ' + str(choice(descriptor)) + str(choice(punctuation))
-    tweeter(txt)
-
-    #print("\nPossible combinations: " + num2words(G.num_combs))
-    #could set this to a bio? or something
-
-if __name__ == '__main__':
-    with open('stop.sh', 'w') as f:
-        PID = os.getpid()
-        f.write('sudo kill ' + str(PID))
-        path = os.path.dirname(__file__) + "/stop.sh" if len(os.path.dirname(__file__)) > 1 else "./stop.sh"
-        os.system("sudo chmod +x " + path)
-    while True:
-        main()
-        sleep(3000)
+    tweeter(txt, num_combs)
 
 
+if __name__ == '__main__':   
+    num_combs = ((len(food) * 2) * len(food) * 2 * len(application) * len(application_method) * len(restaurant) * len(punctuation) * len(ethnicity) * len(descriptor))
+    main(num_combs)
 
-#num_combs = ((len(food) * 2) * len(food) * 2 * len(application) * len(application_method) * len(restaurant) * len(punctuation) * len(ethnicity) * len(descriptor))
-#G.set_combs(num_combs)
+

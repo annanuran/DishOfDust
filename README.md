@@ -8,3 +8,5 @@ Intended to be a comedic bot which just makes up insane foods (which often sound
 
 Check out the twitter page at https://twitter.com/DishOfDust.
 
+### Note: My home server has been down for a couple months so the bot has not been running. 
+
